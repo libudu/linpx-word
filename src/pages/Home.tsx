@@ -1,6 +1,8 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { throttle } from 'lodash';
+import Battle from './Battle';
 
+// 封装弹性自适应页面逻辑
 const Home: React.FC = () => {
   const ref = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState<number | null>(null);
@@ -45,10 +47,7 @@ const Home: React.FC = () => {
           style={{ width: 500, height: height ? height : '100%', zoom }}
           ref={ref}
         >
-          游戏中心
-          <div>
-            123
-          </div>
+          <Battle />
         </div>
       }
     </div>
