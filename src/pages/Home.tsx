@@ -39,11 +39,11 @@ const Home: React.FC = () => {
   }, []);
 
   return (
-    <div className="w-screen h-screen bg-gray-900 flex justify-center items-center">
+    <div className="w-screen h-screen bg-gray-900 flex justify-center items-center overflow-y-scroll">
       {
         zoom &&
         <div
-          className="bg-black text-white text-4xl"
+          className="bg-black text-white"
           style={{ width: 500, height: height ? height : '100%', zoom }}
           ref={ref}
         >

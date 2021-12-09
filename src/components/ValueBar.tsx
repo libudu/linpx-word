@@ -27,7 +27,6 @@ const ValueBar: React.FC<ValueBarProps> = ({
       targets,
       value,
       update: () => {
-        console.log(1)
         setOldValue(targets.value);
       }
     })
