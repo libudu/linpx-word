@@ -1,13 +1,37 @@
-import { emitter, SIGNAL } from './api';
 import TestScript from '@/static/scripts_build/test.js?raw';
+import './api';
 
-interface LoadScriptProps {
-  onText: (text: string) => void,
+interface ScriptCore {
+  // 让ui层显示一条信息
+  showText: (text: string) => void;
+  // 等待ui层请求继续
+  waitUI: () => Promise<void>;
 }
 
-export const loadScript = ({ onText }: LoadScriptProps) => {
-  // 初始化事件监听器
-  emitter.on(SIGNAL.TEXT, onText);
+export let scriptCore: ScriptCore;
+
+
+// 等待UI的Promise的Resolve函数
+let waitUIResolve = () => {};
+
+export const loadScript = ({
+  showText,
+}: {
+  showText: ScriptCore['showText'];
+}) => {
+  scriptCore = {
+    showText,
+    waitUI: async () => {
+      return new Promise((resolve) => {
+        waitUIResolve = resolve;
+      });
+    },
+  }
   // 加载脚本
-  return eval(TestScript);
+  eval(TestScript);
+  return {
+    goNext: () => {
+      waitUIResolve();
+    },
+  };
 };

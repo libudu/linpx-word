@@ -17,12 +17,17 @@ const Battle: React.FC = () => {
   _dialogList = dialogList;
 
   useEffect(() => {
-    loadScript({
-      onText: (text) => {
+    const { goNext } = loadScript({
+      // 新消息
+      showText: (text) => {
         setDialogList([..._dialogList, <Text key={_dialogList.length} text={text} />]);
-        console.log('receive', text);
       },
     });
+    goNext();
+    setTimeout(() => {
+      console.log("1秒后上一句的动画显示完毕，显示下一句");
+      goNext();
+    }, 1000);
   }, []);
 
   return  (

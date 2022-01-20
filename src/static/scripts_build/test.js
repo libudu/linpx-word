@@ -1,4 +1,5 @@
 (async () => {
-  await (await say('你好')).p(1);
-  await (await say('哈哈')).p(2);
+  await text("哈哈");
+  await text("你好");
+  await text("你好123");
 })();
