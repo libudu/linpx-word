@@ -10,6 +10,8 @@ import { loadScript } from '@/scripts';
 
 let _dialogList: any[];
 
+const CPS = 50;
+
 const Battle: React.FC = () => {
   const [value, setValue] = useState(0);
   const [dialogList, setDialogList] = useState<any[]>([]);
@@ -21,13 +23,13 @@ const Battle: React.FC = () => {
       // 新消息
       showText: (text) => {
         setDialogList([..._dialogList, <Text key={_dialogList.length} text={text} />]);
+        // 显示之后延迟500ms动画时间 + 300ms基础时间 + 文字/每秒阅读字数时间
+        setTimeout(() => {
+          goNext();
+        }, 800 + text.length / CPS * 1000);
       },
     });
     goNext();
-    setTimeout(() => {
-      console.log("1秒后上一句的动画显示完毕，显示下一句");
-      goNext();
-    }, 1000);
   }, []);
 
   return  (

@@ -9,14 +9,14 @@ const Text: React.FC<{ text: string }> = ({ text }) => {
       opacity: 1.0,
       translateY: 0,
       duration: 500,
-      easing: 'linear',
+      easing: 'easeInQuad',
       update: () => {
         ref.current?.style.transform
       }
     })
   }, []);
   return (
-    <div ref={ref} style={{ transform: `translateY(-20px)`, opacity: 0 }}>
+    <div ref={ref} style={{ transform: `translateY(10px)`, opacity: 0 }}>
       { text }
     </div>
   )

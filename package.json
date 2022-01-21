@@ -9,7 +9,6 @@
   "dependencies": {
     "@babel/core": "^7.16.0",
     "animejs": "^3.2.1",
-    "babel-plugin-auto-await": "^0.4.2",
     "chokidar": "^3.5.2",
     "eventemitter2": "^6.4.5",
     "fabric": "^4.6.0",
