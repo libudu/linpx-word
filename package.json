@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@babel/core": "^7.16.0",
+    "@babel/standalone": "^7.16.11",
     "animejs": "^3.2.1",
     "chokidar": "^3.5.2",
     "eventemitter2": "^6.4.5",
@@ -20,6 +21,7 @@
   "devDependencies": {
     "@types/animejs": "^3.1.4",
     "@types/babel__core": "^7.1.17",
+    "@types/babel__standalone": "^7.1.4",
     "@types/fabric": "^4.5.5",
     "@types/lodash": "^4.14.177",
     "@types/react": "^17.0.0",
