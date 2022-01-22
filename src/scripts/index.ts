@@ -1,5 +1,11 @@
-import TestScript from '@/../scripts/build/test?raw';
+// 加载脚本全局方法
 import './api';
+
+// 初始化脚本代码到全局store
+import TestScript from '@/../scripts/test.ts?raw'
+import { store } from '@/store';
+import scriptTransform from '@/utils/scriptTransform';
+store.setScript(TestScript);
 
 interface ScriptCore {
   // 让ui层显示一条信息
@@ -18,10 +24,12 @@ export let scriptCore: ScriptCore;
 let UIPromiseResolve = () => {};
 
 export const loadScript = ({
+  script,
   showText,
   showChoice,
   onRestart,
 }: {
+  script: string;
   showText: ScriptCore['showText'];
   showChoice: ScriptCore['showChoice'];
   onRestart: ScriptCore['restart'];
@@ -41,14 +49,19 @@ export const loadScript = ({
   const goNext = () => {
     // 第一次调用，开始运行脚本
     if(!scriptCore.runningScript) {
-      eval(TestScript);
-      scriptCore.runningScript = TestScript;
+      // todo: 使用web worker重做脚本引擎
+      // 现在用eval很不安全，且无法真正关闭，使用web worker这些都能解决
+      const finalScript = scriptTransform(script);
+      if(finalScript) {
+        eval(finalScript);
+        scriptCore.runningScript = script;
+      }
     // 之后调用，唤起被UI阻塞的下一句脚本
     } else {
       UIPromiseResolve();
     }
   }
   return {
-    goNext,
+    goNext
   };
 };

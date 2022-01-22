@@ -16,16 +16,21 @@ import 'codemirror/addon/fold/brace-fold.js';
 import 'codemirror/addon/fold/comment-fold.js';
 // 代码提示
 import { hint } from './hint';
+// 主题
+import 'codemirror/theme/xq-light.css';
 
 const CodeEditor: React.FC<{
   text: string;
   setText: (text: string) => void;
-}> = ({ text, setText }) => {
+  readOnly?: boolean;
+}> = ({ text, setText, readOnly = false }) => {
   return (
     <CodeMirror
-      className='white w-full flex-grow'
+      className='w-full h-full'
       options={{
+        theme: 'xq-light',
         tabSize: 2,
+        readOnly,
         mode: 'text/javascript',
         lineNumbers: true,
         smartIndent: true,

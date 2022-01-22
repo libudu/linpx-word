@@ -45,9 +45,7 @@ const Home: React.FC = () => {
       {
         zoom &&
         <>
-          <Editor
-            onStart={(text) => console.log(text)}
-          />
+          <Editor />
           <div
             className="bg-black text-white"
             style={{ width: 500, height: height ? height : '100%', zoom }}
