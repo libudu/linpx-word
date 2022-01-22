@@ -9,7 +9,7 @@ import HeroBadgeImg from '@/static/icons/hero_badge.svg';
 import { loadScript } from '@/scripts';
 import Choice from '@/components/Choice';
 
-const CPS = 50;
+const CPS = 30;
 
 const Battle: React.FC = () => {
   const [value, setValue] = useState(0);
@@ -27,10 +27,10 @@ const Battle: React.FC = () => {
         // 文本
         showText: (text) => {
           setDialogList([...ref.current, <Text key={getKey()} text={text} />]);
-          // 显示之后延迟500ms动画时间 + 300ms基础时间 + 文字/每秒阅读字数时间
+          // 显示之后延迟500ms动画时间 + 100ms基础时间 + 文字/每秒阅读字数时间
           setTimeout(() => {
             goNext();
-          }, 800 + text.length / CPS * 1000);
+          }, 600 + text.length / CPS * 1000);
         },
         // 选项
         showChoice: (choiceList, onClick) => {

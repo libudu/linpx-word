@@ -1,11 +1,13 @@
-import { PluginItem } from '@babel/core';
+import { registerPlugin, transform } from '@babel/standalone';
+// 仅导出类型，避免babel无法直接打包到前端
+import { PluginItem, types as BabelTypes } from '@babel/core';
 import { StringLiteral } from '@babel/types';
-import { availablePlugins, registerPlugin, transform } from '@babel/standalone';
 
-registerPlugin('linpx-word-script', (o: any): PluginItem => {
-  const types = o.types;
+// 编译linpx-word脚本的Babel插件
+const getLinpxWordScriptBabelPlugin: (types: typeof BabelTypes) => PluginItem = (types) => {
   return {
     visitor: {
+      // 函数声明都改成异步函数
       FunctionDeclaration: (path) => {
         path.node.async = true;
       },
@@ -30,16 +32,21 @@ registerPlugin('linpx-word-script', (o: any): PluginItem => {
       }
     }
   };
+};
+
+// 注册到babel/standalone中，之后就可以用了
+registerPlugin('linpx-word-script', (o: any): PluginItem => {
+  const types = o.types;
+  return getLinpxWordScriptBabelPlugin(types);
 });
 
-export const scriptTransform = async (rowScript: string) => {
+export default (rowScript: string) => {
   // 整体异步包裹
   const wrapperScript = `(async () => {
     // 避免将第一句字符串字面量视为函数指令
     true;
     ${rowScript}
   })();`;
-  console.log(availablePlugins)
 
   // 代码转换
   const result = transform(wrapperScript, {
@@ -49,5 +56,3 @@ export const scriptTransform = async (rowScript: string) => {
   });
   return result?.code;
 };
-
-(window as any).transform = scriptTransform;

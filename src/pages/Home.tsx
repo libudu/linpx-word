@@ -1,9 +1,11 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { throttle } from 'lodash';
 import Battle from './Battle';
+import Editor from './Editor';
 
 // 封装弹性自适应页面逻辑
 const Home: React.FC = () => {
+  // 动态处理游戏区大小
   const ref = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState<number | null>(null);
   const [zoom, setZoom] = useState<number | null>(null);
@@ -39,16 +41,21 @@ const Home: React.FC = () => {
   }, []);
 
   return (
-    <div className="w-screen h-screen bg-gray-900 flex justify-center items-center overflow-y-scroll">
+    <div className="w-screen h-screen bg-gray-900 flex justify-center items-center overflow-hidden">
       {
         zoom &&
-        <div
-          className="bg-black text-white"
-          style={{ width: 500, height: height ? height : '100%', zoom }}
-          ref={ref}
-        >
-          <Battle />
-        </div>
+        <>
+          <Editor
+            onStart={(text) => console.log(text)}
+          />
+          <div
+            className="bg-black text-white"
+            style={{ width: 500, height: height ? height : '100%', zoom }}
+            ref={ref}
+          >
+            <Battle />
+          </div>
+        </>
       }
     </div>
   )
