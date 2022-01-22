@@ -1,3 +1,4 @@
+// @ts-ignore
 import fs from 'fs';
 import { transformAsync, types } from '@babel/core';
 import chokidar from 'chokidar';
