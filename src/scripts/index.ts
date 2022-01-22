@@ -4,6 +4,7 @@ import './api';
 interface ScriptCore {
   // 让ui层显示一条信息
   showText: (text: string) => void;
+  showChoice: (choiceList: string[], onClick: (index: number) => void) => void;
   // 等待ui层请求继续
   waitUI: () => Promise<void>;
   // 当前运行脚本的文本文件
@@ -17,12 +18,15 @@ let UIPromiseResolve = () => {};
 
 export const loadScript = ({
   showText,
+  showChoice,
 }: {
   showText: ScriptCore['showText'];
+  showChoice: ScriptCore['showChoice'];
 }) => {
   // 创建core
   scriptCore = {
     showText,
+    showChoice,
     waitUI: async () => {
       return new Promise((resolve) => {
         UIPromiseResolve = resolve;
