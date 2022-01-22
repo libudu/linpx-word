@@ -10,7 +10,5 @@ export const globalChoice = Object.assign(
       });
     });
     await promise;
-  },
-  {
-  },
+  }
 );

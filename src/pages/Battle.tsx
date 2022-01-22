@@ -22,28 +22,36 @@ const Battle: React.FC = () => {
     const getKey = () => {
       return i++;
     }
-    const { goNext } = loadScript({
-      // 文本
-      showText: (text) => {
-        setDialogList([...ref.current, <Text key={getKey()} text={text} />]);
-        // 显示之后延迟500ms动画时间 + 300ms基础时间 + 文字/每秒阅读字数时间
-        setTimeout(() => {
-          goNext();
-        }, 800 + text.length / CPS * 1000);
-      },
-      // 选项
-      showChoice: (choiceList, onClick) => {
-        setDialogList([
-          ...ref.current,
-          <Choice
-            key={getKey()}
-            choiceList={choiceList}
-            onClick={onClick}
-          />
-        ]);
-      },
-    });
-    goNext();
+    const startGame = () => {
+      const { goNext } = loadScript({
+        // 文本
+        showText: (text) => {
+          setDialogList([...ref.current, <Text key={getKey()} text={text} />]);
+          // 显示之后延迟500ms动画时间 + 300ms基础时间 + 文字/每秒阅读字数时间
+          setTimeout(() => {
+            goNext();
+          }, 800 + text.length / CPS * 1000);
+        },
+        // 选项
+        showChoice: (choiceList, onClick) => {
+          setDialogList([
+            ...ref.current,
+            <Choice
+              key={getKey()}
+              choiceList={choiceList}
+              onClick={onClick}
+            />
+          ]);
+        },
+        // 重启
+        onRestart: () => {
+          setDialogList([]);
+          startGame();
+        }
+      });
+      goNext();
+    };
+    startGame();
   }, []);
 
   return  (

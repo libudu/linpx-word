@@ -1,4 +1,4 @@
-import TestScript from '@/static/scripts_build/test.js?raw';
+import TestScript from '@/../scripts/build/test?raw';
 import './api';
 
 interface ScriptCore {
@@ -9,6 +9,7 @@ interface ScriptCore {
   waitUI: () => Promise<void>;
   // 当前运行脚本的文本文件
   runningScript?: string;
+  restart: () => void;
 }
 
 export let scriptCore: ScriptCore;
@@ -19,9 +20,11 @@ let UIPromiseResolve = () => {};
 export const loadScript = ({
   showText,
   showChoice,
+  onRestart,
 }: {
   showText: ScriptCore['showText'];
   showChoice: ScriptCore['showChoice'];
+  onRestart: ScriptCore['restart'];
 }) => {
   // 创建core
   scriptCore = {
@@ -32,6 +35,7 @@ export const loadScript = ({
         UIPromiseResolve = resolve;
       });
     },
+    restart: onRestart,
   }
   // 返回给UI的goNext
   const goNext = () => {

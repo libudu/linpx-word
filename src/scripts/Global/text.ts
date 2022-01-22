@@ -5,7 +5,5 @@ export const globalText = Object.assign(
   async (str: string) => {
     scriptCore.showText(str);
     await scriptCore.waitUI();
-  },
-  {
-  },
+  }
 );

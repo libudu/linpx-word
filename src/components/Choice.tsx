@@ -9,7 +9,7 @@ const Choice: React.FC<{
   const ref = useTextAnimeRef();
   
   return (
-    <div ref={ref} className='flex justify-around'>
+    <div ref={ref} className='flex justify-around opacity-0'>
       {
         choiceList.map((choice, index) => (
           <div

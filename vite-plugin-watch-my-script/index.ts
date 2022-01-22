@@ -3,6 +3,9 @@ import fs from 'fs';
 import { transformAsync, types } from '@babel/core';
 import chokidar from 'chokidar';
 
+const WATCH_DIR = './scripts';
+const OUTPUT_DIR = './scripts/build';
+
 export default function () {
   let chokidarInstance = null;
 
@@ -11,8 +14,12 @@ export default function () {
     buildStart: () => {
       if(chokidarInstance == null) {
         // 检测脚本目录下的文件
-        chokidarInstance = chokidar.watch('./src/static/scripts').on("change", async (path) => {
-          // 读取脚本并处理
+        chokidarInstance = chokidar.watch(WATCH_DIR).on("change", async (path) => {
+          // 只处理ts文件
+          if(path.slice(-2) != 'ts') {
+            return;
+          }
+
           const script = fs.readFileSync(path).toString();
           // 整体异步包裹
           const wrapperScript = `(async () => {
@@ -20,11 +27,15 @@ export default function () {
             true;
             ${script}
           })();`;
-          // 代码转换并输出
+
+          // 代码转换
           const { code } = await transformAsync(wrapperScript, {
             plugins: [
               {
                 visitor: {
+                  FunctionDeclaration: (path) => {
+                    path.node.async = true;
+                  },
                   // 给所有函数调用加上await
                   Function: (path) => {
                     path.traverse({
@@ -48,8 +59,10 @@ export default function () {
               },
             ]
           });
-          let outputPath = path.replace('scripts', 'scripts_build');
-          outputPath = outputPath.slice(0, outputPath.length - 3) + '.js';
+
+          // 输出到指定目录
+          const fileName = path.split('\\').slice(-1)[0];
+          const outputPath = OUTPUT_DIR + '/' + fileName.slice(0, -3) + '.js';
           fs.writeFileSync(outputPath, code);
           console.log('更新文件:', path);
         });
