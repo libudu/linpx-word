@@ -1,27 +1,32 @@
-// 加载脚本全局方法
-import './api';
-
 // 初始化脚本代码到全局store
 import TestScript from '@/../scripts/test.ts?raw'
 import { store } from '@/store';
-import scriptTransform from '@/utils/scriptTransform';
+import scriptTransform from '@/scripts/transform';
+import { createWorker } from './worker';
 store.setScript(TestScript);
 
-interface ScriptCore {
+interface UiApi {
   // 让ui层显示一条信息
   showText: (text: string) => void;
   showChoice: (choiceList: string[], onClick: (index: number) => void) => void;
   // 等待ui层请求继续
   waitUI: () => Promise<void>;
-  // 当前运行脚本的文本文件
-  runningScript?: string;
+  // 让ui层清空重启
   restart: () => void;
 }
 
-export let scriptCore: ScriptCore;
+export let uiApi: UiApi;
+
+interface WorkerApi {
+  setReturn: (_return: number) => void;
+  goNext: () => void;
+  endGame:  () => void;
+}
+
+export let workerApi: WorkerApi;
 
 // 等待UI的Promise的Resolve函数
-let UIPromiseResolve = () => {};
+let uiGoNext = () => {};
 
 export const loadScript = ({
   script,
@@ -30,38 +35,57 @@ export const loadScript = ({
   onRestart,
 }: {
   script: string;
-  showText: ScriptCore['showText'];
-  showChoice: ScriptCore['showChoice'];
-  onRestart: ScriptCore['restart'];
+  showText: UiApi['showText'];
+  showChoice: UiApi['showChoice'];
+  onRestart: UiApi['restart'];
 }) => {
-  // 创建core
-  scriptCore = {
+  // 根据传入参数构建uiApi
+  uiApi = {
     showText,
     showChoice,
     waitUI: async () => {
       return new Promise((resolve) => {
-        UIPromiseResolve = resolve;
+        uiGoNext = resolve;
       });
     },
     restart: onRestart,
   }
-  // 返回给UI的goNext
-  const goNext = () => {
-    // 第一次调用，开始运行脚本
-    if(!scriptCore.runningScript) {
-      // todo: 使用web worker重做脚本引擎
-      // 现在用eval很不安全，且无法真正关闭，使用web worker这些都能解决
-      const finalScript = scriptTransform(script);
-      if(finalScript) {
-        eval(finalScript);
-        scriptCore.runningScript = script;
-      }
-    // 之后调用，唤起被UI阻塞的下一句脚本
-    } else {
-      UIPromiseResolve();
+  // 开始游戏，创建worker并构建worker api
+  const startGame = () => {
+    const finalScript = scriptTransform(script);
+    if(finalScript) {
+      const w = createWorker(finalScript);
+      workerApi = {
+        setReturn: (_return) => {
+          w.postMessage({
+            method: '_return',
+            args: _return,
+          });
+        },
+        goNext: () => {
+          w.postMessage({
+            method: 'goNext',
+          });
+        },
+        endGame: () => {
+          console.log('worker shut down!');
+          w.terminate();
+        },
+      };
     }
-  }
+  };
+  // 返回给UI层的api
   return {
-    goNext
+    goNext: () => {
+      if(!workerApi) {
+        startGame();
+      } else {
+        uiGoNext();
+      }
+    },
+    endGame: () => {
+      workerApi?.endGame();
+      workerApi = undefined as any;
+    }
   };
 };

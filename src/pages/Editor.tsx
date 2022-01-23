@@ -2,6 +2,7 @@ import React from 'react';
 import CodeEditor from '@/components/CodeEditor';
 import { observer } from 'mobx-react';
 import { store } from '@/store';
+import { gameEnd, gameStart } from '@/utils/event';
 
 const Editor: React.FC = () => {
   const { running, setRunning, script, setScript, setRunningMode } = store;
@@ -34,6 +35,7 @@ const Editor: React.FC = () => {
             className='w-full text-center bg-red-400 hover:bg-red-300 text-3xl py-3'
             onClick={() => {
               setRunning(!running);
+              gameEnd();
           }}>
             停止运行
           </div>
@@ -45,6 +47,7 @@ const Editor: React.FC = () => {
               onClick={() => {
                 setRunningMode('product');
                 setRunning(!running);
+                gameStart();
               }}
             >
               开始运行
@@ -54,6 +57,7 @@ const Editor: React.FC = () => {
               onClick={() => {
                 setRunningMode('dev');
                 setRunning(!running);
+                gameStart();
               }}
             >
               测试运行

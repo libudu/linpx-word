@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite'
 import reactRefresh from '@vitejs/plugin-react-refresh'
-import watchMyScript from './vite-plugin-watch-my-script';
+// import watchMyScript from './vite-plugin-watch-my-script';
 // @ts-ignore
 import path from 'path'
 
@@ -8,7 +8,7 @@ import path from 'path'
 export default defineConfig({
   plugins: [
     reactRefresh(),
-    watchMyScript(),
+    // watchMyScript(),
   ],
   server: {
     proxy: {

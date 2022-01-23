@@ -10,6 +10,7 @@ import { loadScript } from '@/scripts';
 import Choice from '@/components/Choice';
 import { observer } from 'mobx-react';
 import { store } from '@/store';
+import { gameEnd, gameStart, listenGameEnd, listenGameStart } from '@/utils/event';
 
 const CPS = 30;
 
@@ -21,24 +22,20 @@ const Battle: React.FC = () => {
   ref.current = dialogList;
 
   useEffect(() => {
-    // 初始化或停止运行
-    if(!running) {
-      setDialogList([]);
-      return;
-    }
-    // 开始运行
-    let i = 0;
-    const getKey = () => {
-      return i++;
-    }
     let timer: number;
+    let clearScript: any;
     // 清除游戏
     const clearGame = () => {
       setDialogList([]);
       clearTimeout(timer);
+      clearScript?.();
     };
     const startGame = () => {
-      const { goNext } = loadScript({
+      const getKey = (() => {
+        let i = 0;
+        return () => i++;
+      })();
+      const { goNext, endGame } = loadScript({
         // 文本
         script,
         showText: (text) => {
@@ -65,10 +62,11 @@ const Battle: React.FC = () => {
         },
         // 重启
         onRestart: () => {
-          clearGame();
-          startGame();
+          gameEnd();
+          gameStart();
         },
       });
+      clearScript = endGame;
       try {
         goNext();
         // 没有出错，将错误信息置空
@@ -78,11 +76,18 @@ const Battle: React.FC = () => {
         clearGame();
       }
     };
-    startGame();
-    return () => {
+
+    listenGameStart(() => {
+      console.log('game start');
+      startGame();
+    });
+    listenGameEnd(() => {
+      console.log('game end');
       clearGame();
-    };
-  }, [running]);
+    });
+
+    return clearGame;
+  }, []);
 
   return (
     <div className='flex flex-col w-full h-full relative'>

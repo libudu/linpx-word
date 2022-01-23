@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { throttle } from 'lodash';
-import Battle from './Battle';
+import Game from './Game';
 import Editor from './Editor';
 import { observer } from 'mobx-react';
 import { store } from '@/store';
@@ -70,7 +70,7 @@ const Home: React.FC = () => {
               style={{ width: gameWidth, height: height ? height : '100%', zoom }}
               ref={ref}
             >
-              <Battle />
+              <Game />
             </div>
           }
           {

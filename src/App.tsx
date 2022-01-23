@@ -1,6 +1,6 @@
 import React from 'react'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
-import './utils/scriptTransform';
+import './scripts/transform';
 
 import Home from './pages/Home'
 import About from './pages/About'

@@ -1,7 +1,7 @@
 // @ts-ignore
 import fs from 'fs';
 import chokidar from 'chokidar';
-import transform from '../src/utils/scriptTransform';
+import transform from '../src/scripts/transform';
 
 const WATCH_DIR = './scripts';
 const OUTPUT_DIR = './scripts/build';
