@@ -81,7 +81,7 @@ const Battle: React.FC = () => {
   }, [running]);
 
   return (
-    <>
+    <div className='flex flex-col w-full h-full'>
       <div className="flex items-center my-2 px-4">
         <img className="w-10 mr-4" src={HeroBadgeImg} />
         <ValueBar value={value} borderColor="red" fillColor="orange" />
@@ -91,12 +91,12 @@ const Battle: React.FC = () => {
         <ValueBar value={value} borderColor="#4a86e8" fillColor="#26aceb" />
       </div>
       <Divider />
-      <div className="text-xl px-4">
+      <div className="text-xl px-4 flex-grow overflow-y-scroll scrollbar-hidden">
         {
           dialogList
         }
       </div>
-    </>
+    </div>
   );
 };
 
