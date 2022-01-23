@@ -6,6 +6,7 @@ class Core {
   }
 
   running = false;
+  runningMode: 'dev' | 'product' = 'dev';
   script = '';
   errorInfo = '';
 
@@ -19,6 +20,10 @@ class Core {
 
   setErrorInfo = (errorInfo: string) => {
     this.errorInfo = errorInfo;
+  };
+
+  setRunningMode = (mode: typeof this.runningMode) => {
+    this.runningMode = mode;
   };
 }
 

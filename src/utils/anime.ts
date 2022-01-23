@@ -2,6 +2,7 @@ import anime from 'animejs';
 
 export type Target = HTMLElement | null;
 
+// 从底部向上滑动，渐隐出现
 export const bottomFadeIn = ({
   target,
   initYpos = 10,

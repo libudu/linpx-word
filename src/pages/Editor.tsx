@@ -4,11 +4,10 @@ import { observer } from 'mobx-react';
 import { store } from '@/store';
 
 const Editor: React.FC = () => {
-  const { running, setRunning, script, setScript } = store;
+  const { running, setRunning, script, setScript, setRunningMode } = store;
   return (
     <div
-      className='h-screen flex flex-col rounded-lg bg-gray-200'
-      style={{ width: 600 }}
+      className='w-full h-full flex flex-col bg-gray-200'
     >
       <div className='text-2xl text-center py-2'>
         代码区
@@ -38,13 +37,27 @@ const Editor: React.FC = () => {
           }}>
             停止运行
           </div>
-        : <div
-            className='w-full text-center hover:bg-gray-300 text-3xl py-3'
-            onClick={() => {
-              setRunning(!running);
-            }}
-          >
-            开始运行
+        : 
+          <div className='flex'>
+            <div
+              className='flex-grow text-center hover:bg-gray-300 text-3xl py-3'
+              style={{ borderRight: '2px solid #888' }}
+              onClick={() => {
+                setRunningMode('product');
+                setRunning(!running);
+              }}
+            >
+              开始运行
+            </div>
+            <div
+              className='flex-grow text-center hover:bg-gray-300 text-3xl py-3'
+              onClick={() => {
+                setRunningMode('dev');
+                setRunning(!running);
+              }}
+            >
+              测试运行
+            </div>
           </div>
       }
     </div>

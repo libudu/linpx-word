@@ -14,7 +14,7 @@ import { store } from '@/store';
 const CPS = 30;
 
 const Battle: React.FC = () => {
-  const { running, script } = store;
+  const { running, script, runningMode } = store;
   const [value, setValue] = useState(0);
   const [dialogList, setDialogList] = useState<React.ReactElement[]>([]);
   const ref = useRef(dialogList);
@@ -44,9 +44,13 @@ const Battle: React.FC = () => {
         showText: (text) => {
           setDialogList([...ref.current, <Text key={getKey()} text={text} />]);
           // 显示之后延迟500ms动画时间 + 100ms基础时间 + 文字/每秒阅读字数时间
+          let delay = 600 + text.length / CPS * 1000;
+          if(runningMode == 'dev') {
+            delay /= 3;
+          }
           timer = setTimeout(() => {
             goNext();
-          }, 600 + text.length / CPS * 1000);
+          }, delay);
         },
         // 选项
         showChoice: (choiceList, onClick) => {
@@ -81,7 +85,7 @@ const Battle: React.FC = () => {
   }, [running]);
 
   return (
-    <div className='flex flex-col w-full h-full'>
+    <div className='flex flex-col w-full h-full relative'>
       <div className="flex items-center my-2 px-4">
         <img className="w-10 mr-4" src={HeroBadgeImg} />
         <ValueBar value={value} borderColor="red" fillColor="orange" />
