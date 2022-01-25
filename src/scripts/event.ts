@@ -38,7 +38,8 @@ export interface IText {
 }
 
 export interface IChoice {
-  items: string[] | string;
+  items: string[];
+  animate: 'show' | 'hide' | 'fade';
 }
 
 export const textEvent = makeEventHandler<IText>(GameCoreEvent.text);

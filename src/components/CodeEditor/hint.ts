@@ -17,14 +17,9 @@ const hintInfoList: IHint[] = [
     pickLeftMove: 2,
   },
   {
-    text: 'choice("")',
-    desc: '显示单选选项',
-    pickLeftMove: 2,
-  },
-  {
-    text: 'choice(["", ""])',
-    desc: '显示多选选项',
-    pickLeftMove: 8,
+    text: 'choice("", "")',
+    desc: '显示一个选项',
+    pickLeftMove: 6,
   },
   {
     text: '_return',

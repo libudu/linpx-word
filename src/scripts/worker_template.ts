@@ -22,8 +22,16 @@ const main = async () => {
     postMessage('text', { content });
     waitGoNext();
   };
-  const choice = (items: IChoice['items']) => {
-    postMessage('choice', { items });
+  const choice = (...items: IChoice['items']) => {
+    postMessage('choice', { items, animate: 'fade' });
+    waitGoNext();
+  };
+  const choice_show = (...items: IChoice['items']) => {
+    postMessage('choice', { items, animate: 'show' });
+    waitGoNext();
+  };
+  const choice_hide = (...items: IChoice['items']) => {
+    postMessage('choice', { items, animate: 'hide' });
     waitGoNext();
   };
   const core = {

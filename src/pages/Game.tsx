@@ -51,14 +51,12 @@ const Battle: React.FC = () => {
         }, delay);
       };
 
-      const showChoice = ({ items }: IChoice) => {
-        if(!Array.isArray(items)) {
-          items = [items]
-        }
+      const showChoice = ({ items, animate }: IChoice) => {
         setDialogList([
           ...ref.current,
           <Choice
             key={getKey()}
+            animate={animate}
             choiceList={items}
             // 点击后触发choiceReturn事件
             onClick={choiceReturnEvent.emit}

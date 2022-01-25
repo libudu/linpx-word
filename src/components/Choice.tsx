@@ -1,11 +1,13 @@
 import { useTextAnimeRef } from '@/utils/animeHooks';
 import React, { useState } from 'react';
 import classnames from 'classnames';
+import { IChoice } from '@/scripts/event';
 
 const Choice: React.FC<{
+  animate: IChoice['animate'],
   choiceList: string[],
   onClick: (index: number) => void;
-}> = ({ choiceList, onClick }) => {
+}> = ({ choiceList, onClick, animate }) => {
   const [click, setClick] = useState<number | null>(null);
   const ref = useTextAnimeRef();
   
@@ -14,8 +16,11 @@ const Choice: React.FC<{
       {
         choiceList.map((choice, index) => (
           <div
-            className={classnames('bg-gray-600 rounded-lg py-2 px-4 my-2', { 'opacity-0': click != null && index != click })}
-            style={{ transition: '0.4s all' }}
+            className={classnames(
+              'bg-gray-600 rounded-lg py-2 px-4 my-2', 
+              { 'opacity-0': animate != 'show' && click != null && index != click }
+            )}
+            style={{ transition: animate == 'fade' ? '0.4s all' : '' }}
             key={index}
             onClick={() => {
               if(click == null) {
