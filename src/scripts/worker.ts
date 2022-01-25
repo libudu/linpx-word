@@ -1,25 +1,12 @@
-import { store } from "@/store";
-import { globalChoice } from "./api/choice";
-import { globalCore } from "./api/core";
-import { globalText } from "./api/text";
-
-// 定义用户脚本中api的格式
-// 影响到work_template中哪些接口需要实现
-export interface WorkerApi {
-  text: typeof globalText;
-  choice: typeof globalChoice;
-  core: typeof globalCore;
-}
+import { choiceEvent, lifeEvent, textEvent } from "./event";
 
 // 收到worker发来的调用用户脚本api后的处理
 // 影响到worker_template中postMessage参数
 export const workerMessageHandler = {
-  text: globalText,
-  choice: globalChoice,
-  restart: globalCore.restart,
-  error: (e: string) => {
-    store.setErrorInfo('代码执行出错！\n' + e);
-  },
+  text: textEvent.emit,
+  choice: choiceEvent.emit,
+  restart: lifeEvent.restart.emit,
+  error: lifeEvent.error.emit,
 };
 
 export type IWorkerHandler = typeof workerMessageHandler;
@@ -36,7 +23,6 @@ export interface IWorkerMessage {
     args?: any[];
   }
 }
-
 
 export const createWorker = (script: string) => {
   const blob = new Blob([script]);

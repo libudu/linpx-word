@@ -10,7 +10,8 @@ import { loadScript } from '@/scripts';
 import Choice from '@/components/Choice';
 import { observer } from 'mobx-react';
 import { store } from '@/store';
-import { emitEvent, GameEvent, listenEvent } from '@/utils/event';
+import { choiceEvent, choiceReturnEvent, IChoice, lifeEvent, textEvent } from '@/scripts/event';
+import { IText } from '@/scripts/event';
 
 const CPS = 30;
 
@@ -27,71 +28,78 @@ const Battle: React.FC = () => {
       setDialogList([]);
       clearTimeout(timer);
     };
+
     const startGame = () => {
-      const { script, runningMode } = store;
+      const { runningMode } = store;
       const getKey = (() => {
         let i = 0;
         return () => i++;
       })();
-      loadScript({
-        // 文本
-        script,
-        showText: (text) => {
-          setDialogList([
-            ...ref.current,
-            <Text key={getKey()} text={text} />
-          ]);
-          // 显示之后延迟500ms动画时间 + 100ms基础时间 + 文字/每秒阅读字数时间
-          let delay = 600 + text.length / CPS * 1000;
-          if(runningMode == 'dev') {
-            delay /= 3;
-          }
-          timer = setTimeout(() => {
-            emitEvent(GameEvent.goNext);
-          }, delay);
-        },
-        // 选项
-        showChoice: (choiceList, onClick) => {
-          setDialogList([
-            ...ref.current,
-            <Choice
-              key={getKey()}
-              choiceList={choiceList}
-              onClick={onClick}
-            />
-          ]);
-        },
-        // 重启
-        onRestart: () => {
-          emitEvent(GameEvent.gameEnd);
-          emitEvent(GameEvent.gameStart);
-        },
-      });
-      try {
-        emitEvent(GameEvent.goNext);
-        // 没有出错，将错误信息置空
-        store.setErrorInfo('');
-      } catch (e) {
-        store.setErrorInfo('代码编写出错！\n' + (e as Error).message);
-        clearGame();
-      }
-    };
 
-    const removeStartListener = listenEvent(GameEvent.gameStart, () => {
-      console.log('game start');
+      const showText = ({ content }: IText) => {
+        setDialogList([
+          ...ref.current,
+          <Text key={getKey()} text={content} />
+        ]);
+        // 显示之后延迟500ms动画时间 + 100ms基础时间 + 文字/每秒阅读字数时间
+        let delay = 600 + content.length / CPS * 1000;
+        if(runningMode == 'dev') {
+          delay /= 3;
+        }
+        timer = setTimeout(() => {
+          lifeEvent.goNext.emit();
+        }, delay);
+      };
+
+      const showChoice = ({ items }: IChoice) => {
+        if(!Array.isArray(items)) {
+          items = [items]
+        }
+        setDialogList([
+          ...ref.current,
+          <Choice
+            key={getKey()}
+            choiceList={items}
+            // 点击后触发choiceReturn事件
+            onClick={choiceReturnEvent.emit}
+          />
+        ]);
+      };
+
+      // 监听
+      const removeListenerList = [
+        // 显示事件
+        textEvent.on(showText),
+        choiceEvent.on(showChoice),
+        // 生命周期事件
+        lifeEvent.end.on(() => {
+          console.log('game end');
+          // 游戏结束，取消所有事件监听
+          removeListenerList.forEach(removeListener => removeListener());
+          clearGame();
+        }),
+        lifeEvent.restart.on(() => {
+          clearGame();
+          startGame();
+        }),
+      ];
+
+      // try {
+      //   // 没有出错，将错误信息置空
+      //   store.setErrorInfo('');
+      // } catch (e) {
+      //   store.setErrorInfo('代码编写出错！\n' + (e as Error).message);
+      //   clearGame();
+      // }
+    };
+    
+    lifeEvent.start.on(() => {
+      const { script } = store;
+      loadScript({
+        script
+      });
       startGame();
     });
-
-    const removeEndListener = listenEvent(GameEvent.gameEnd, () => {
-      console.log('game end');
-      clearGame();
-    });
-
-    return () => {
-      clearGame();
-      removeStartListener();
-      removeEndListener();
-    };
   }, []);
 
   return (

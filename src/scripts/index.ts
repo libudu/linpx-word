@@ -3,92 +3,45 @@ import TestScript from '@/../scripts/test.ts?raw'
 import { store } from '@/store';
 import scriptTransform from '@/scripts/transform';
 import { createWorker } from './worker';
-import { GameEvent, listenEvent, listenEventOnce } from '@/utils/event';
+import { choiceReturnEvent, lifeEvent } from '@/scripts/event';
 
 // 初始脚本
 store.setScript(TestScript);
 
-interface UiApi {
-  // 让ui层显示一条信息
-  showText: (text: string) => void;
-  showChoice: (choiceList: string[], onClick: (index: number) => void) => void;
-  // 等待ui层请求继续
-  waitUI: () => Promise<void>;
-  // 让ui层清空重启
-  restart: () => void;
-}
-
-export let uiApi: UiApi;
-
-interface WorkerApi {
-  setReturn: (_return: number) => void;
-  goNext: () => void;
-  endGame:  () => void;
-}
-
-export let workerApi: WorkerApi;
-
-// 等待UI的Promise的Resolve函数
-let uiGoNext = () => {};
-
 export const loadScript = ({
   script,
-  showText,
-  showChoice,
-  onRestart,
 }: {
   script: string;
-  showText: UiApi['showText'];
-  showChoice: UiApi['showChoice'];
-  onRestart: UiApi['restart'];
 }) => {
-  // 根据传入参数构建uiApi
-  uiApi = {
-    showText,
-    showChoice,
-    waitUI: async () => {
-      return new Promise((resolve) => {
-        uiGoNext = resolve;
-      });
-    },
-    restart: onRestart,
-  }
   // 开始游戏，创建worker并构建worker api
-  const startGame = () => {
-    const finalScript = scriptTransform(script);
-    if(finalScript) {
-      const w = createWorker(finalScript);
-      workerApi = {
-        setReturn: (_return) => {
-          w.postMessage({
-            method: '_return',
-            args: _return,
-          });
-        },
-        goNext: () => {
-          w.postMessage({
-            method: 'goNext',
-          });
-        },
-        endGame: () => {
-          console.log('worker shut down!');
-          w.terminate();
-        },
-      };
-    }
-  };
-  // 监听脚本继续事件
-  const removeGoNextListener = listenEvent(GameEvent.goNext, () => {
-    if(!workerApi) {
-      startGame();
-    } else {
-      uiGoNext();
-    }
-  });
-  // 监听结束游戏事件
-  listenEventOnce(GameEvent.gameEnd, () => {
-    workerApi?.endGame();
-    workerApi = undefined as any;
-    removeGoNextListener();
-  });
+  const finalScript = scriptTransform(script);
+  if(finalScript) {
+    const w = createWorker(finalScript);
+    const removeListenerList = [
+      // 选项返回事件
+      choiceReturnEvent.on((choice) => {
+        w.postMessage({
+          method: '_return',
+          args: choice,
+        });
+        w.postMessage({
+          method: 'goNext',
+        });
+      }),
+      // 生命周期事件
+      lifeEvent.goNext.on(() => {
+        w.postMessage({
+          method: 'goNext',
+        });
+      }),
+      lifeEvent.end.on(() => {
+        w.terminate();
+        removeListenerList.forEach(removeListener => removeListener());
+      }),
+      lifeEvent.restart.on(() => {
+        w.terminate();
+        removeListenerList.forEach(removeListener => removeListener());
+      }),
+    ];
+  }
 };
