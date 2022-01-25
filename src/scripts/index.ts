@@ -3,6 +3,9 @@ import TestScript from '@/../scripts/test.ts?raw'
 import { store } from '@/store';
 import scriptTransform from '@/scripts/transform';
 import { createWorker } from './worker';
+import { GameEvent, listenEvent, listenEventOnce } from '@/utils/event';
+
+// 初始脚本
 store.setScript(TestScript);
 
 interface UiApi {
@@ -74,18 +77,18 @@ export const loadScript = ({
       };
     }
   };
-  // 返回给UI层的api
-  return {
-    goNext: () => {
-      if(!workerApi) {
-        startGame();
-      } else {
-        uiGoNext();
-      }
-    },
-    endGame: () => {
-      workerApi?.endGame();
-      workerApi = undefined as any;
+  // 监听脚本继续事件
+  const removeGoNextListener = listenEvent(GameEvent.goNext, () => {
+    if(!workerApi) {
+      startGame();
+    } else {
+      uiGoNext();
     }
-  };
+  });
+  // 监听结束游戏事件
+  listenEventOnce(GameEvent.gameEnd, () => {
+    workerApi?.endGame();
+    workerApi = undefined as any;
+    removeGoNextListener();
+  });
 };

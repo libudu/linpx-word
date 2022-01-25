@@ -10,12 +10,11 @@ import { loadScript } from '@/scripts';
 import Choice from '@/components/Choice';
 import { observer } from 'mobx-react';
 import { store } from '@/store';
-import { gameEnd, gameStart, listenGameEnd, listenGameStart } from '@/utils/event';
+import { emitEvent, GameEvent, listenEvent } from '@/utils/event';
 
 const CPS = 30;
 
 const Battle: React.FC = () => {
-  const { running, script, runningMode } = store;
   const [value, setValue] = useState(0);
   const [dialogList, setDialogList] = useState<React.ReactElement[]>([]);
   const ref = useRef(dialogList);
@@ -23,30 +22,32 @@ const Battle: React.FC = () => {
 
   useEffect(() => {
     let timer: number;
-    let clearScript: any;
     // 清除游戏
     const clearGame = () => {
       setDialogList([]);
       clearTimeout(timer);
-      clearScript?.();
     };
     const startGame = () => {
+      const { script, runningMode } = store;
       const getKey = (() => {
         let i = 0;
         return () => i++;
       })();
-      const { goNext, endGame } = loadScript({
+      loadScript({
         // 文本
         script,
         showText: (text) => {
-          setDialogList([...ref.current, <Text key={getKey()} text={text} />]);
+          setDialogList([
+            ...ref.current,
+            <Text key={getKey()} text={text} />
+          ]);
           // 显示之后延迟500ms动画时间 + 100ms基础时间 + 文字/每秒阅读字数时间
           let delay = 600 + text.length / CPS * 1000;
           if(runningMode == 'dev') {
             delay /= 3;
           }
           timer = setTimeout(() => {
-            goNext();
+            emitEvent(GameEvent.goNext);
           }, delay);
         },
         // 选项
@@ -62,31 +63,35 @@ const Battle: React.FC = () => {
         },
         // 重启
         onRestart: () => {
-          gameEnd();
-          gameStart();
+          emitEvent(GameEvent.gameEnd);
+          emitEvent(GameEvent.gameStart);
         },
       });
-      clearScript = endGame;
       try {
-        goNext();
+        emitEvent(GameEvent.goNext);
         // 没有出错，将错误信息置空
         store.setErrorInfo('');
       } catch (e) {
-        store.setErrorInfo('代码出错了！\n' + (e as Error).message);
+        store.setErrorInfo('代码编写出错！\n' + (e as Error).message);
         clearGame();
       }
     };
 
-    listenGameStart(() => {
+    const removeStartListener = listenEvent(GameEvent.gameStart, () => {
       console.log('game start');
       startGame();
     });
-    listenGameEnd(() => {
+
+    const removeEndListener = listenEvent(GameEvent.gameEnd, () => {
       console.log('game end');
       clearGame();
     });
 
-    return clearGame;
+    return () => {
+      clearGame();
+      removeStartListener();
+      removeEndListener();
+    };
   }, []);
 
   return (

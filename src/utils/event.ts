@@ -2,20 +2,21 @@ import { EventEmitter2 } from "eventemitter2";
 
 const emitter = new EventEmitter2();
 
-export const gameStart = () => {
-  emitter.emit('gameStart');
-};
-
-export const gameEnd = () => {
-  emitter.emit('gameEnd');
+export enum GameEvent {
+  gameStart = 'gameStart',
+  gameEnd = 'gameEnd',
+  goNext = 'goNext',
 }
 
-export const listenGameStart = (callback: () => void) => {
-  emitter.on('gameStart', callback);
-  return () => emitter.off('gameStart', callback);
+export const emitEvent = (e: GameEvent) => {
+  emitter.emit(e);
 };
 
-export const listenGameEnd = (callback: () => void) => {
-  emitter.on('gameEnd', callback);
-  return () => emitter.off('gameEnd', callback);
+export const listenEvent = (e: GameEvent, callback: () => void) => {
+  emitter.on(e, callback);
+  return () => emitter.off(e, callback);
+};
+
+export const listenEventOnce = (e: GameEvent, callback: () => void) => {
+  emitter.once(e, callback);
 };

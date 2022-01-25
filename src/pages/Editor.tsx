@@ -2,7 +2,7 @@ import React from 'react';
 import CodeEditor from '@/components/CodeEditor';
 import { observer } from 'mobx-react';
 import { store } from '@/store';
-import { gameEnd, gameStart } from '@/utils/event';
+import { emitEvent, GameEvent } from '@/utils/event';
 
 const Editor: React.FC = () => {
   const { running, setRunning, script, setScript, setRunningMode } = store;
@@ -14,7 +14,7 @@ const Editor: React.FC = () => {
         代码区
         <span className='text-lg ml-2'>(语言：轻改JavaScript)</span>
       </div>
-      <div className='flex-grow overflow-hidden relative'>
+      <div className='w-full flex-grow overflow-hidden relative'>
         <CodeEditor
           text={script}
           setText={setScript}
@@ -23,7 +23,7 @@ const Editor: React.FC = () => {
           running &&
           <div
             className={`bg-gray-500 bg-opacity-50 w-full h-full z-10 absolute left-0 top-0 
-              text-red-600 flex justify-center items-center p-4 whitespace-pre text-xl`}
+              text-red-600 flex justify-center items-center p-4 whitespace-pre-line text-xl`}
           >
             { store.errorInfo }
           </div>
@@ -35,7 +35,7 @@ const Editor: React.FC = () => {
             className='w-full text-center bg-red-400 hover:bg-red-300 text-3xl py-3'
             onClick={() => {
               setRunning(!running);
-              gameEnd();
+              emitEvent(GameEvent.gameEnd)
           }}>
             停止运行
           </div>
@@ -47,7 +47,7 @@ const Editor: React.FC = () => {
               onClick={() => {
                 setRunningMode('product');
                 setRunning(!running);
-                gameStart();
+                emitEvent(GameEvent.gameStart)
               }}
             >
               开始运行
@@ -57,7 +57,7 @@ const Editor: React.FC = () => {
               onClick={() => {
                 setRunningMode('dev');
                 setRunning(!running);
-                gameStart();
+                emitEvent(GameEvent.gameStart);
               }}
             >
               测试运行

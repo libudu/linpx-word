@@ -1,3 +1,4 @@
+import { store } from "@/store";
 import { globalChoice } from "./api/choice";
 import { globalCore } from "./api/core";
 import { globalText } from "./api/text";
@@ -16,6 +17,9 @@ export const workerMessageHandler = {
   text: globalText,
   choice: globalChoice,
   restart: globalCore.restart,
+  error: (e: string) => {
+    store.setErrorInfo('代码执行出错！\n' + e);
+  },
 };
 
 export type IWorkerHandler = typeof workerMessageHandler;
@@ -45,12 +49,6 @@ export const createWorker = (script: string) => {
     // @ts-ignore
     workerMessageHandler[method]?.(...args);
   };
-
-  // 收到worker报错
-  worker.addEventListener('error', (e) => {
-    console.log(e);
-    worker.terminate();
-  });
 
   return worker;
 };

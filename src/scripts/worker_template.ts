@@ -8,7 +8,7 @@ const postMessage = <T extends keyof IWorkerHandler>(method: T, args: Parameters
   });
 };
 
-(async () => {
+const main = async () => {
   // 用户接口声明
   let text: WorkerApi['text'];
   let choice: WorkerApi['choice'];
@@ -60,4 +60,12 @@ const postMessage = <T extends keyof IWorkerHandler>(method: T, args: Parameters
   })();
 
   // @code
+};
+
+(async () => {
+  try {
+    await main();
+  } catch (e: any) {
+    postMessage('error', [ e.stack ]);
+  }
 })();
