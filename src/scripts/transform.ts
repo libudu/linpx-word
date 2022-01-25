@@ -7,6 +7,11 @@ import WorkerTemplate from './worker_template?raw';
 
 // 编译linpx-word脚本的Babel插件
 const getLinpxWordScriptBabelPlugin: (types: typeof BabelTypes) => PluginItem = (types) => {
+  // 传入字符串，生成一个 await text(str)表达式
+  const makeAwaitCallTextExpression = (str: string) => {
+    const newExpression = types.callExpression(types.identifier("text"), [types.stringLiteral(str)]);
+    return types.awaitExpression(newExpression);
+  };
   return {
     visitor: {
       // 函数声明都改成异步函数
@@ -24,15 +29,19 @@ const getLinpxWordScriptBabelPlugin: (types: typeof BabelTypes) => PluginItem = 
               path.replaceWith(types.awaitExpression(path.node))
             }
           },
-        })
+        });
+        // 将函数第一行文本，原本视作函数指令，现在视作text调用
+        const body = path.node.body as any;
+        if(body.directives?.length) {
+          const strList: string[] = body.directives.map((dir: any) => dir.value.value);
+          body.body.unshift(...strList.map(str => types.expressionStatement(makeAwaitCallTextExpression(str))));
+        }
       },
       // 脚本语法糖，将表达式中的字符串字面量转换为text函数调用
       ExpressionStatement: (path) => {
         const expression = path.node.expression as StringLiteral;
         if(types.isStringLiteral(expression)) {
-          const value = expression.value ;
-          const newExpression = types.callExpression(types.identifier("text"), [types.stringLiteral(value)]);
-          path.node.expression = types.awaitExpression(newExpression);
+          path.node.expression = makeAwaitCallTextExpression(expression.value);
         }
       }
     }
