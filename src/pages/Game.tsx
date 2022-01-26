@@ -13,8 +13,6 @@ import { store } from '@/store';
 import { choiceEvent, choiceReturnEvent, IChoice, lifeEvent, textEvent } from '@/scripts/event';
 import { IText } from '@/scripts/event';
 
-const CPS = 30;
-
 const Battle: React.FC = () => {
   const [value, setValue] = useState(0);
   const [dialogList, setDialogList] = useState<React.ReactElement[]>([]);
@@ -22,15 +20,7 @@ const Battle: React.FC = () => {
   ref.current = dialogList;
 
   useEffect(() => {
-    let timer: number;
-    // 清除游戏
-    const clearGame = () => {
-      setDialogList([]);
-      clearTimeout(timer);
-    };
-
     const startGame = () => {
-      const { runningMode } = store;
       const getKey = (() => {
         let i = 0;
         return () => i++;
@@ -39,16 +29,12 @@ const Battle: React.FC = () => {
       const showText = ({ content }: IText) => {
         setDialogList([
           ...ref.current,
-          <Text key={getKey()} text={content} />
+          <Text
+            key={getKey()}
+            text={content}
+            onAnimateEnd={lifeEvent.goNext.emit}
+          />
         ]);
-        // 显示之后延迟500ms动画时间 + 100ms基础时间 + 文字/每秒阅读字数时间
-        let delay = 600 + content.length / CPS * 1000;
-        if(runningMode == 'dev') {
-          delay /= 3;
-        }
-        timer = setTimeout(() => {
-          lifeEvent.goNext.emit();
-        }, delay);
       };
 
       const showChoice = ({ items, animate }: IChoice) => {
@@ -74,30 +60,33 @@ const Battle: React.FC = () => {
           console.log('game end');
           // 游戏结束，取消所有事件监听
           removeListenerList.forEach(removeListener => removeListener());
-          clearGame();
+          setDialogList([]);
+          // 错误信息清空
+          store.setErrorInfo("");
+        }),
+        lifeEvent.error.on((e) => {
+          store.setErrorInfo('代码执行出错！\n' + e);
         }),
         lifeEvent.restart.on(() => {
-          clearGame();
+          setDialogList([]);
           startGame();
         }),
       ];
-
-      // try {
-      //   // 没有出错，将错误信息置空
-      //   store.setErrorInfo('');
-      // } catch (e) {
-      //   store.setErrorInfo('代码编写出错！\n' + (e as Error).message);
-      //   clearGame();
-      // }
     };
     
-    lifeEvent.start.on(() => {
+    return lifeEvent.start.on(() => {
       const { script } = store;
-      loadScript({
-        script
-      });
-      startGame();
+      try {
+        loadScript({
+          script
+        });
+        startGame();
+      } catch (e) {
+        setDialogList([]);
+        store.setErrorInfo('代码编写出错！\n' + (e as Error).message);
+      }
     });
+
   }, []);
 
   return (

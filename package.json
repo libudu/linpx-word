@@ -15,6 +15,7 @@
     "codemirror": "^5.65.1",
     "eventemitter2": "^6.4.5",
     "fabric": "^4.6.0",
+    "htmlparser2": "^7.2.0",
     "lodash": "^4.17.21",
     "mobx": "^6.3.13",
     "mobx-react": "^7.2.1",

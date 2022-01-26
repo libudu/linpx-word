@@ -34,6 +34,10 @@ export const loadScript = ({
           method: 'goNext',
         });
       }),
+      lifeEvent.error.on(() => {
+        w.terminate();
+        removeListenerList.forEach(removeListener => removeListener());
+      }),
       lifeEvent.end.on(() => {
         w.terminate();
         removeListenerList.forEach(removeListener => removeListener());
