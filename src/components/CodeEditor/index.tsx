@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { UnControlled as CodeMirror } from 'react-codemirror2';
 
 import 'codemirror/lib/codemirror.css';
@@ -18,6 +18,13 @@ import 'codemirror/addon/fold/comment-fold.js';
 import { hint } from './hint';
 // 主题
 import 'codemirror/theme/xq-light.css';
+import { fileApi, TEMP_FILE_NAME } from '@/utils/fileSystem';
+import { throttle } from 'lodash';
+
+// 将最后一次编辑的内容保存到缓存中，下次进入时加载
+const cacheScriptToFileSystem = throttle((script: string) => {
+  fileApi.write(TEMP_FILE_NAME, script);
+}, 1000, { leading: false });
 
 const CodeEditor: React.FC<{
   initText: string;
@@ -52,8 +59,9 @@ const CodeEditor: React.FC<{
       onCursorActivity={(e) => {
         e.showHint();
       }}
-      onBeforeChange={(editor, data, value) => {
+      onChange={(_, __, value) => {
         setText(value);
+        cacheScriptToFileSystem(value);
       }}
     />
   );

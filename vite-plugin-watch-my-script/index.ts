@@ -1,4 +1,3 @@
-// @ts-ignore
 import fs from 'fs';
 import chokidar from 'chokidar';
 import transform from '../src/scripts/transform';

@@ -13,6 +13,7 @@ import UndoImg from '@/static/icons/undo.png';
 
 import TestScript from '@/../scripts/test.js?raw'
 import { getChooseFileText, downloadText } from '@/utils';
+import { fileApi, TEMP_FILE_NAME } from '@/utils/fileSystem';
 
 
 interface FuncButtonProps {
@@ -125,9 +126,12 @@ const Editor: React.FC = () => {
   const { running, setRunning, setScript, setRunningMode, editorModal } = store;
   const ref = useRef<any>();
   useEffect(() => {
-    // 设置初始脚本，加载编辑器
-    store.setScript(TestScript);
-    store.setEditor(ref.current.editor);
+    (async () => {
+      // 设置初始脚本，加载编辑器
+      const lastScript = await fileApi.read(TEMP_FILE_NAME);
+      store.setEditor(ref.current.editor);
+      store.setEditorScript(lastScript || TestScript);
+    })();
   }, []);
 
   return (
