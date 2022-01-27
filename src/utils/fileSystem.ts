@@ -5,19 +5,16 @@ import { FileSystem } from 'browserfs/dist/node/core/file_system';
 export const TEMP_FILE_NAME = '/temp.txt';
 
 let fs: FileSystem;
-await new Promise((resolve) => {
-  getFileSystem({
-    fs: 'LocalStorage',
-    options: {},
-  }, (e, fileSystem) => {
-    if(e) {
-      console.log(e)
-    }
-    if(fileSystem) {
-      fs = fileSystem;
-      resolve(null);
-    }
-  })
+getFileSystem({
+  fs: 'LocalStorage',
+  options: {},
+}, (e, fileSystem) => {
+  if(e) {
+    console.log(e)
+  }
+  if(fileSystem) {
+    fs = fileSystem;
+  }
 });
 
 export const fileApi = {
