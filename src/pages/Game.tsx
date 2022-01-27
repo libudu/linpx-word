@@ -49,7 +49,7 @@ const Game: React.FC = () => {
           />
         ]);
       };
-
+      
       // 监听
       const removeListenerList = [
         // 显示事件
@@ -67,18 +67,23 @@ const Game: React.FC = () => {
           store.setErrorInfo('代码执行出错！\n' + e);
         }),
         lifeEvent.restart.on(() => {
+          // 取消上次的监听
+          removeListenerList.forEach(removeListener => removeListener());
           setDialogList([]);
-          startGame();
+          // 延迟启动，避免与脚本引擎的restart时序竞争
+          setTimeout(() => {
+            startGame();
+          }, 100);
         }),
       ];
+
+      // 加载脚本启动引擎
+      const { script } = store;
+      loadScript({ script });
     };
     
     return lifeEvent.start.on(() => {
-      const { script } = store;
       try {
-        loadScript({
-          script
-        });
         startGame();
       } catch (e) {
         setDialogList([]);

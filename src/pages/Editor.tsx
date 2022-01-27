@@ -138,7 +138,7 @@ const Editor: React.FC = () => {
         代码区
         <span className='text-lg ml-2'>(语言：轻改JavaScript)</span>
       </div>
-      <div className='text-lg py-0.5 mb-0.5 flex bg-gray-200 justify-center'>
+      <div className='text-lg flex-wrap  py-0.5 mb-0.5 flex bg-gray-200 justify-center'>
         {
           FuncButtonList.map(props => <FuncButton key={props.name} {...props} />)
         }
@@ -168,41 +168,43 @@ const Editor: React.FC = () => {
           </div>
         }
       </div>
-      {
-        running
-        ? <div
-            className='w-full text-center bg-red-400 hover:bg-red-300 text-3xl py-3'
-            onClick={() => {
-              setRunning(!running);
-              lifeEvent.end.emit();
-          }}>
-            停止运行
-          </div>
-        : 
-          <div className='flex'>
-            <div
-              className='flex-grow text-center hover:bg-gray-300 text-3xl py-3'
-              style={{ borderRight: '2px solid #888' }}
+      <div className='text-center text-xl sm:text-3xl'>
+        {
+          running
+          ? <div
+              className='w-full bg-red-400 hover:bg-red-300 py-3'
               onClick={() => {
-                setRunningMode('product');
                 setRunning(!running);
-                lifeEvent.start.emit();
-              }}
-            >
-              开始运行
+                lifeEvent.end.emit();
+            }}>
+              停止运行
             </div>
-            <div
-              className='flex-grow text-center hover:bg-gray-300 text-3xl py-3'
-              onClick={() => {
-                setRunningMode('dev');
-                setRunning(!running);
-                lifeEvent.start.emit();
-              }}
-            >
-              测试运行
+          : 
+            <div className='flex'>
+              <div
+                className='flex-grow hover:bg-gray-300 py-3'
+                style={{ borderRight: '2px solid #888' }}
+                onClick={() => {
+                  setRunningMode('product');
+                  setRunning(!running);
+                  lifeEvent.start.emit();
+                }}
+              >
+                开始运行
+              </div>
+              <div
+                className='flex-grow hover:bg-gray-300 py-3'
+                onClick={() => {
+                  setRunningMode('dev');
+                  setRunning(!running);
+                  lifeEvent.start.emit();
+                }}
+              >
+                测试运行
+              </div>
             </div>
-          </div>
-      }
+        }
+      </div>
     </div>
   );
 };

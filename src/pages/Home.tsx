@@ -5,6 +5,8 @@ import Editor from './Editor';
 import { observer } from 'mobx-react';
 import { store } from '@/store';
 import { isScreenSmall } from '@/utils';
+import classNames from 'classnames';
+import { lifeEvent } from '@/scripts/event';
 
 // 封装弹性自适应页面逻辑
 const Home: React.FC = () => {
@@ -54,31 +56,28 @@ const Home: React.FC = () => {
       {
         zoom &&
         <>
-          {
-            (!isSmall || !running) &&
-            <div
-              className='h-screen rounded-lg'
-              style={{ width: editorWidth, maxWidth: '100vw' }}
-            >
-              <Editor />
-            </div>
-          }
-          {
-            (!isSmall || running) &&
-            <div
-              className="bg-black text-white"
-              style={{ width: gameWidth, height: height ? height : '100%', zoom }}
-              ref={ref}
-            >
-              <Game />
-            </div>
-          }
+          <div
+            className={classNames('h-screen rounded-lg', { hidden: isSmall && running })}
+            style={{ width: editorWidth, maxWidth: '100vw' }}
+          >
+            <Editor />
+          </div>
+          <div
+            className={classNames("bg-black text-white", { hidden: isSmall && !running})}
+            style={{ width: gameWidth, height: height ? height : '100%', zoom }}
+            ref={ref}
+          >
+            <Game />
+          </div>
           {
             (isSmall && running) &&
             <div
               className='absolute bg-red-500 w-28 h-10 rounded-full pl-4 pt-1.5 text-lg'
               style={{ bottom: '40%', right: -18 }}
-              onClick={() => setRunning(false)}
+              onClick={() => {
+                setRunning(false)
+                lifeEvent.end.emit();
+              }}
             >
               停止运行
             </div>
