@@ -25,7 +25,7 @@ export interface IWorkerMessage {
 }
 
 export const createWorker = (script: string) => {
-  const blob = new Blob([script]);
+  const blob = new Blob([script], { type: 'text/plain;charset=utf-8' });
   const url = window.URL.createObjectURL(blob);
   const worker = new Worker(url);
   console.log('worker start on', url);

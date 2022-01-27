@@ -1,5 +1,5 @@
-import React from 'react';
-import CodeMirror from 'react-codemirror';
+import React, { useState } from 'react';
+import { UnControlled as CodeMirror } from 'react-codemirror2';
 
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/mode/javascript/javascript.js';
@@ -20,12 +20,14 @@ import { hint } from './hint';
 import 'codemirror/theme/xq-light.css';
 
 const CodeEditor: React.FC<{
-  text: string;
+  initText: string;
   setText: (text: string) => void;
   readOnly?: boolean;
-}> = ({ text, setText, readOnly = false }) => {
+  cmRef?: React.MutableRefObject<any>;
+}> = ({ initText, setText, readOnly = false, cmRef }) => {
   return (
     <CodeMirror
+      ref={cmRef}
       className='w-full h-full'
       options={{
         theme: 'xq-light',
@@ -46,12 +48,12 @@ const CodeEditor: React.FC<{
           hint,
         }
       }}
-      value={text}
+      value={initText}
       onCursorActivity={(e) => {
         e.showHint();
       }}
-      onChange={(e) => {
-        setText(e);
+      onBeforeChange={(editor, data, value) => {
+        setText(value);
       }}
     />
   );

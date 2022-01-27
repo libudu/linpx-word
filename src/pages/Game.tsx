@@ -13,7 +13,7 @@ import { store } from '@/store';
 import { choiceEvent, choiceReturnEvent, IChoice, lifeEvent, textEvent } from '@/scripts/event';
 import { IText } from '@/scripts/event';
 
-const Battle: React.FC = () => {
+const Game: React.FC = () => {
   const [value, setValue] = useState(0);
   const [dialogList, setDialogList] = useState<React.ReactElement[]>([]);
   const ref = useRef(dialogList);
@@ -57,7 +57,6 @@ const Battle: React.FC = () => {
         choiceEvent.on(showChoice),
         // 生命周期事件
         lifeEvent.end.on(() => {
-          console.log('game end');
           // 游戏结束，取消所有事件监听
           removeListenerList.forEach(removeListener => removeListener());
           setDialogList([]);
@@ -109,4 +108,4 @@ const Battle: React.FC = () => {
   );
 };
 
-export default observer(Battle);
+export default observer(Game);

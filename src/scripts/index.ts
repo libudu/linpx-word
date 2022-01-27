@@ -1,12 +1,6 @@
-// 初始化脚本代码到全局store
-import TestScript from '@/../scripts/test.ts?raw'
-import { store } from '@/store';
 import scriptTransform from '@/scripts/transform';
 import { createWorker } from './worker';
 import { choiceReturnEvent, lifeEvent } from '@/scripts/event';
-
-// 初始脚本
-store.setScript(TestScript);
 
 export const loadScript = ({
   script,
