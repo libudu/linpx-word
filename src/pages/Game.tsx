@@ -16,11 +16,15 @@ import { IText } from '@/scripts/event';
 const Game: React.FC = () => {
   const [value, setValue] = useState(0);
   const [dialogList, setDialogList] = useState<React.ReactElement[]>([]);
-  const ref = useRef(dialogList);
-  ref.current = dialogList;
+  const dialogRef = useRef(dialogList);
+  dialogRef.current = dialogList;
+  const containerRef = useRef<HTMLDivElement>();
 
   useEffect(() => {
     const startGame = () => {
+      const scrollToBottom = () => {
+        containerRef.current.scrollTo({ top: 99999, behavior: 'smooth' });
+      };
       const getKey = (() => {
         let i = 0;
         return () => i++;
@@ -28,18 +32,19 @@ const Game: React.FC = () => {
 
       const showText = ({ content }: IText) => {
         setDialogList([
-          ...ref.current,
+          ...dialogRef.current,
           <Text
             key={getKey()}
             text={content}
             onAnimateEnd={lifeEvent.goNext.emit}
           />
         ]);
+        scrollToBottom();
       };
 
       const showChoice = ({ items, animate }: IChoice) => {
         setDialogList([
-          ...ref.current,
+          ...dialogRef.current,
           <Choice
             key={getKey()}
             animate={animate}
@@ -48,6 +53,7 @@ const Game: React.FC = () => {
             onClick={choiceReturnEvent.emit}
           />
         ]);
+        scrollToBottom();
       };
       
       // 监听
@@ -104,7 +110,7 @@ const Game: React.FC = () => {
         <ValueBar value={value} borderColor="#4a86e8" fillColor="#26aceb" />
       </div>
       <Divider />
-      <div className="text-xl px-4 flex-grow overflow-y-scroll scrollbar-hidden">
+      <div className="text-xl px-4 flex-grow overflow-y-scroll scrollbar-hidden pb-16" ref={containerRef}>
         {
           dialogList
         }
