@@ -35,6 +35,12 @@ export const createWorker = (script: string) => {
     // @ts-ignore
     workerMessageHandler[method]?.(...args);
   };
+  worker.onerror = (e) => {
+    const { message, lineno, colno } = e;
+    const errorInfo = `${message}\n(${lineno}.${colno})`;
+    console.log(e);
+    lifeEvent.error.emit(errorInfo);
+  };
 
   return worker;
 };

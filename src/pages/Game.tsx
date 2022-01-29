@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ValueBar from '@/components/ValueBar';
 import Divider from '@/components/Divider';
-import Text from '@/components/Text';
+import Text from '@/components/GameElement/Text';
 
 import LightImg from '@/static/icons/light.svg';
 import HeroBadgeImg from '@/static/icons/hero_badge.svg';
 
 import { loadScript } from '@/scripts';
-import Choice from '@/components/Choice';
+import Choice from '@/components/GameElement/Choice';
 import { observer } from 'mobx-react';
 import { store } from '@/store';
 import { choiceEvent, choiceReturnEvent, IChoice, lifeEvent, textEvent } from '@/scripts/event';
@@ -30,12 +30,12 @@ const Game: React.FC = () => {
         return () => i++;
       })();
 
-      const showText = ({ content }: IText) => {
+      const showText = (text: IText) => {
         setDialogList([
           ...dialogRef.current,
           <Text
             key={getKey()}
-            text={content}
+            {...text}
             onAnimateEnd={lifeEvent.goNext.emit}
           />
         ]);

@@ -5,6 +5,10 @@
 "这里有很多草"
 "艹艹艹艹艹艹艹艹艹艹艹艹艹"
 
+'无阴影'
+'<text shadow="1px 1px 4px white">浅阴影</text>'
+'<text shadow-deep="1px 1px 4px white">深阴影</text>'
+
 // 【提示】调用choice，传入一个字符串，可以唤出一个需要玩家点击的选项
 choice("继续")
 "艹艹艹艹艹艹艹艹艹艹艹艹艹"
