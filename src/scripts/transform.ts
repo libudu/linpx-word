@@ -15,10 +15,16 @@ const getLinpxWordScriptBabelPlugin: (types: typeof BabelTypes) => PluginItem = 
   return {
     visitor: {
       // 函数声明都改成异步函数
+      FunctionExpression: (path) => {
+        path.node.async = true;
+      },
       ArrowFunctionExpression: (path) => {
         path.node.async = true;
       },
       FunctionDeclaration: (path) => {
+        path.node.async = true;
+      },
+      ObjectMethod: (path) => {
         path.node.async = true;
       },
       // 给所有函数调用加上await

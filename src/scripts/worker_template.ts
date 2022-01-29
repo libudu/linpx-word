@@ -1,4 +1,4 @@
-import { IChoice } from "./event";
+import { IChoice, IText } from "./event";
 import { IWorkerHandler, IWorkerMessage } from "./worker";
 
 const postMessage = <T extends keyof IWorkerHandler>(method: T, ...args: Parameters<IWorkerHandler[T]>) => {
@@ -18,22 +18,34 @@ const waitGoNext = async () => {
 
 const main = async () => {
   // 用户接口声明
-  const text = (content: string) => {
-    postMessage('text', { content });
+  const _text = (props: IText) => {
+    postMessage('text', props);
     waitGoNext();
   };
-  const choice = (...items: IChoice['items']) => {
-    postMessage('choice', { items, animate: 'fade' });
+
+  // 使得text可以链式调用
+  const makeChainText = (props: Partial<IText> = {}) => {
+    return Object.assign((content: string) => {
+      _text({ ...props, content });
+    }, {
+      // todo：调用text对象上的方法，调颜色、大小、特效等
+      color: (color: string) => {
+        return makeChainText({ ...props, color })
+      },
+      size: () => {},
+    });
+  };
+
+  const text = makeChainText();
+  const say = (name: string, content: string) => postMessage('text', { content, name });
+
+  const _choice = (props: IChoice) => {
+    postMessage('choice', props);
     waitGoNext();
   };
-  const choice_show = (...items: IChoice['items']) => {
-    postMessage('choice', { items, animate: 'show' });
-    waitGoNext();
-  };
-  const choice_hide = (...items: IChoice['items']) => {
-    postMessage('choice', { items, animate: 'hide' });
-    waitGoNext();
-  };
+  const choice = (...items: IChoice['items']) => _choice({ items, animate: 'fade' });
+  const choice_show = (...items: IChoice['items']) => _choice({ items, animate: 'show' });
+  const choice_hide = (...items: IChoice['items']) => _choice({ items, animate: 'hide' });
   const core = {
     restart: () => {
       postMessage('restart');

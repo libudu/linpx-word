@@ -21,3 +21,5 @@ export const bottomFadeIn = ({
     easing: 'easeInQuad',
   });
 };
+
+// todo：文字发光动画

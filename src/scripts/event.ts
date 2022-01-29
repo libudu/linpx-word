@@ -34,7 +34,9 @@ const makeEventHandler = <T>(symbol: string) => {
 };
 
 export interface IText {
+  name?: string;
   content: string;
+  color?: string;
 }
 
 export interface IChoice {
