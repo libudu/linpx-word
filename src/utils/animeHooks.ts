@@ -56,7 +56,7 @@ export const useAnimeListRef = (animeParamList: (Omit<AnimeParams, 'targets'> | 
       // 组件卸载时清空动画，避免循环动画导致的内存泄漏
       return () => anime.remove(target);
     }
-  }, [ref.current]);
+  }, []);
   return ref;
 };
 

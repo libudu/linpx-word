@@ -3,6 +3,10 @@
 "<text color=red i bold>粗斜红</text><text color=#aabbcc>rgb #aabbcc</text>"
 "<text shake>抖动</text>"
 
+'<text glow="white">发光</text>'
+'<text glow="red">发光</text>'
+'<text glow="blue">发光</text>'
+
 '<text outline="0.5px red">0.5px描边</text>'
 '<text outline="1px red">1px描边</text>'
 
