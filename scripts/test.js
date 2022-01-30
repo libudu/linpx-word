@@ -1,16 +1,20 @@
 // 【提示】使用英文双括号括起一段话，组成一个“字符串”，可以显示出一段文本
 "<text i>斜体</text><text bold>粗体</text><text color=red>red</text>"
 "<text color=red i bold>粗斜红</text><text color=#aabbcc>rgb #aabbcc</text>"
-"你来到了一片丛林。"
-"这里有很多草"
-"艹艹艹艹艹艹艹艹艹艹艹艹艹"
+"<text shake>抖动</text>"
+
+'<text outline="0.5px red">0.5px描边</text>'
+'<text outline="1px red">1px描边</text>'
 
 '无阴影'
 '<text shadow="1px 1px 4px white">浅阴影</text>'
 '<text shadow-deep="1px 1px 4px white">深阴影</text>'
+'<text glow>发光</text>'
 
 // 【提示】调用choice，传入一个字符串，可以唤出一个需要玩家点击的选项
-choice("继续")
+"你来到了一片丛林。"
+"这里有很多草"
+"艹艹艹艹艹艹艹艹艹艹艹艹艹"
 "艹艹艹艹艹艹艹艹艹艹艹艹艹"
 "艹艹艹艹艹艹艹艹艹艹艹艹艹"
 

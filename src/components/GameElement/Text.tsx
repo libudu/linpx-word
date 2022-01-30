@@ -2,6 +2,7 @@ import { useTextAnimeRef } from '@/utils/animeHooks';
 import React, { useEffect, useState } from 'react';
 import { parseDocument } from 'htmlparser2';
 import { store } from '@/store';
+import TextSpan from './TextSpan';
 
 const CPS = 30;
 
@@ -61,6 +62,7 @@ const textTagList: {
   {
     attr: 'shadow-deep',
     map: ({ attrValue }) => {
+      // example: 1px 1px 4px white
       const partList = attrValue.split(' ').filter(e => e);
       const styleValue = [['', ''], ['-', ''], ['', '-'], ['-', '-']].map(([x, y]) => {
         return `${x}${partList[0]} ${y}${partList[1]} ${partList.slice(2).join(' ')}`
@@ -81,18 +83,17 @@ const processText = (text: string) => {
     const result: JSX.Element[] = [];
     nodeList.forEach(({ type, data, children, attribs }, index) => {
       if(type === 'tag') {
-        const childResult = processNodeList(children);
         let eleStyle: React.CSSProperties = {};
+        const childResult = processNodeList(children);
         // 处理文本标签
         textTagList.forEach(({ attr, style, map }) => {
           // 不存在属性
-          if(!attribs[attr]) {
+          if(attribs[attr] == undefined) {
             return;
           }
           // 存在映射关系
           if(map) {
             const { styleKey, styleValue } = map({ attrValue: attribs[attr] });
-            console.log(styleValue);
             eleStyle[styleKey] = styleValue;
             return;
           }
@@ -101,7 +102,16 @@ const processText = (text: string) => {
           const value = style?.value || attribs[attr];
           eleStyle[key] = value;
         });
-        result.push(<span key={index} style={eleStyle}>{childResult}</span>)
+        result.push(
+          <TextSpan
+            key={index}
+            style={eleStyle}
+            shake={attribs['shake'] != undefined}
+            glow={attribs['glow']}
+          >
+            { childResult }
+          </TextSpan>
+        );
       } else {
         // 统计有效字数
         count += data.length;
@@ -162,8 +172,3 @@ const Text: React.FC<{
 };
 
 export default Text;
-
-/**
- * const redtext = text.color('red')
- * redtext('123')
- */

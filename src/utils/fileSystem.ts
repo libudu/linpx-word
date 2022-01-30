@@ -29,4 +29,7 @@ export const fileApi = {
       return '';
     }
   },
+  getFileList: () => {
+    return fs.readdirSync('/');
+  },
 };
