@@ -8,8 +8,9 @@ class Core {
 
   running = false;
   runningMode: 'dev' | 'product' = 'dev';
-  script = '';
   errorInfo = '';
+  fileName = '';
+  script = '';
   editor: Editor | undefined;
   editorModal: JSX.Element | undefined;
 
@@ -17,12 +18,12 @@ class Core {
     this.running = running;
   };
 
-  // 仅用于初始化和CodeMirror的change函数
+  // 记录编辑器中的最新文本
   setScript = (script: string) => {
     this.script = script;
   };
   
-  // 用于改写CodeMirror的值
+  // 实际改写编辑器中的值
   setEditorScript = (script: string) => {
     if(this.editor) {
       this.editor.setValue(script);
@@ -30,6 +31,11 @@ class Core {
     } else {
       console.log('全局editor尚未初始化！');
     }
+  };
+
+  // 脚本文件名
+  setFileName = (name: string) => {
+    this.fileName = name;
   };
 
   setErrorInfo = (errorInfo: string) => {

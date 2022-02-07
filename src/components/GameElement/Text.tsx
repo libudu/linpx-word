@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { parseDocument } from 'htmlparser2';
 import { store } from '@/store';
 import TextSpan from './TextSpan';
+import classNames from 'classnames';
 
 const CPS = 30;
 
@@ -130,9 +131,10 @@ const processText = (text: string) => {
 const Text: React.FC<{
   name?: string;
   content: string;
-  color?: string;
-  onAnimateEnd: () => void;
-}> = ({ name, content, color, onAnimateEnd }) => {
+  className?: string;
+  style?: React.CSSProperties;
+  onAnimateEnd?: () => void;
+}> = ({ name, content, style,  onAnimateEnd, className }) => {
   const ref = useTextAnimeRef();
   const [nameEle, setNameEle] = useState<JSX.Element[]>();
   const [children, setChildren] = useState<JSX.Element[]>();
@@ -149,7 +151,7 @@ const Text: React.FC<{
       delay /= 3;
     }
     const timer = setTimeout(() => {
-      onAnimateEnd();
+      onAnimateEnd && onAnimateEnd();
     }, delay);
     // 组件卸载时取消定时器
     return () => {
@@ -157,14 +159,14 @@ const Text: React.FC<{
     };
   }, []);
   return (
-    <div ref={ref} className='opacity-0 flex'>
+    <div ref={ref} className={classNames('opacity-0 flex', className)} style={style}>
       {
         name &&
         <div className='mr-2 w-16 flex-shrink-0'>
           { nameEle }
         </div>
       }
-      <div className='flex-wrap' style={{ 'overflowWrap': 'anywhere', color }}>
+      <div className='flex-wrap' style={{ 'overflowWrap': 'anywhere' }}>
         { children }
       </div>
     </div>

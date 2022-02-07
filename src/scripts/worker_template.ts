@@ -30,7 +30,10 @@ const main = async () => {
     }, {
       // todo：调用text对象上的方法，调颜色、大小、特效等
       color: (color: string) => {
-        return makeChainText({ ...props, color })
+        const newProps = { ...props };
+        if(!newProps.style) newProps.style = {};
+        newProps.style['color'] = color;
+        return makeChainText(newProps);
       },
       size: () => {},
     });
@@ -39,6 +42,7 @@ const main = async () => {
   const text = makeChainText();
   const say = (name: string, content: string) => postMessage('text', { content, name });
 
+  // 选项
   const _choice = (props: IChoice) => {
     postMessage('choice', props);
     waitGoNext();

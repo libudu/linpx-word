@@ -13,3 +13,36 @@
     display: none;
   }
 }
+
+// 多行文字省略
+.u-line-1 {
+  -webkit-line-clamp: 1;
+}
+
+.u-line-2 {
+  -webkit-line-clamp: 2;
+}
+
+.u-line-3 {
+  -webkit-line-clamp: 3;
+}
+
+.u-line-4 {
+  -webkit-line-clamp: 4;
+}
+
+.u-line-5 {
+  -webkit-line-clamp: 5;
+}
+
+.u-line-1,
+.u-line-2,
+.u-line-3,
+.u-line-4,
+.u-line-5 {
+  overflow: hidden;
+  word-break: break-all;
+  text-overflow: ellipsis;
+  display: -webkit-box; // 弹性伸缩盒
+  -webkit-box-orient: vertical; // 设置伸缩盒子元素排列方式
+}

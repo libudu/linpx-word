@@ -1,4 +1,5 @@
 import { EventEmitter2 } from "eventemitter2";
+import React from "react";
 
 const emitter = new EventEmitter2();
 
@@ -36,7 +37,7 @@ const makeEventHandler = <T>(symbol: string) => {
 export interface IText {
   name?: string;
   content: string;
-  color?: string;
+  style?: React.CSSProperties;
 }
 
 export interface IChoice {
