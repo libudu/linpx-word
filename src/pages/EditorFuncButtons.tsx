@@ -32,7 +32,7 @@ export const FuncButton: React.FC<FuncButtonProps> = ({ name, icon, width = 22, 
 };
 
 
-const ConfirmModal: React.FC<{ content: React.ReactChild; onConfirm: () => void; }> = ({ content, onConfirm }) => {
+export const ConfirmModal: React.FC<{ content: React.ReactChild; onConfirm: () => void; }> = ({ content, onConfirm }) => {
   return (
     <div className='bg-white rounded-lg p-4 break-words whitespace-pre-line'>
       {content}

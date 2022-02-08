@@ -8,7 +8,6 @@ import { fileApi } from '@/utils/fileSystem';
 import EditorMenu from './EditorMenu';
 import { FuncButton, FuncButtonList } from './EditorFuncButtons';
 
-import TestScript from '@/../scripts/test.js?raw'
 import LeftImg from '@/static/icons/left.png';
 
 // 将最后一次编辑的内容保存到缓存中，下次进入时加载
@@ -17,9 +16,13 @@ const cacheScriptToFileSystem = throttle((file: string, script: string) => {
 }, 1000, { leading: false });
 
 const Editor: React.FC = () => {
-  const { running, setRunning, setScript, setRunningMode, editorModal } = store;
+  const { running, script, fileName, setRunning, setScript, setRunningMode, setFileName } = store;
 
   const [showMenu, setShowMenu] = useState(true);
+  const [tempFileName, setTempFileName] = useState(fileName);
+  useEffect(() => {
+    setTempFileName(fileName);
+  }, [fileName]);
   const ref = useRef<any>();
   useEffect(() => {
     if(ref.current) {
@@ -43,31 +46,46 @@ const Editor: React.FC = () => {
         <img src={LeftImg} />
       </div>
       <div className='text-2xl text-center pt-2 pb-1'>
-        { store.fileName }
+        <input
+          className='bg-transparent outline-none hover:bg-white focus:bg-white text-center'
+          value={tempFileName}
+          onChange={(e) => {
+            const name = e.target.value;
+            setTempFileName(name);
+            console.log(name);
+          }}
+          onBlur={(e) => {
+            const name = e.target.value;
+            // 无效或重名，修改无效
+            if(!name || fileApi.existFile(name)) {
+              setTempFileName(fileName);
+              return;
+            }
+            // 尝试修改，成功则成功
+            try {
+              fileApi.renameFile(fileName, name);
+              setFileName(name);
+            } catch (error) {
+              console.log(error);
+              setTempFileName(fileName);
+            }
+          }}
+        />
       </div>
       <div className='text-lg flex-wrap  py-0.5 mb-0.5 flex bg-gray-200 justify-center'>
         {
           FuncButtonList.map(props => <FuncButton key={props.name} {...props} />)
         }
       </div>
-      <div className='w-full flex-grow overflow-hidden relative'>
+      <div className='w-full flex-grow overflow-hidden'>
         <CodeEditor
           cmRef={ref}
-          initText={TestScript}
+          initText={script}
           setText={(value) => {
             setScript(value);
             cacheScriptToFileSystem(store.fileName, value);
           }}
         />
-        {
-          editorModal &&
-          <div
-            className={`bg-gray-500 bg-opacity-50 w-full h-full z-10 absolute left-0 top-0 
-              flex justify-center items-center p-4 whitespace-pre-line text-xl`}
-          >
-            { editorModal }
-          </div>
-        }
         {
           running &&
           <div
@@ -82,7 +100,7 @@ const Editor: React.FC = () => {
         {
           running
           ? <div
-              className='w-full bg-red-400 hover:bg-red-300 py-3'
+              className='w-full bg-red-400 hover:bg-red-300 py-3 relative z-10'
               onClick={() => {
                 setRunning(!running);
                 lifeEvent.end.emit();

@@ -10,7 +10,7 @@ import { lifeEvent } from '@/scripts/event';
 
 // 封装弹性自适应页面逻辑
 const Home: React.FC = () => {
-  const { running, setRunning } = store;
+  const { running, setRunning, editorModal } = store;
   // 动态处理游戏区大小
   const ref = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState<number | null>(null);
@@ -57,10 +57,19 @@ const Home: React.FC = () => {
         zoom &&
         <>
           <div
-            className={classNames('h-screen rounded-lg', { hidden: isSmall && running })}
+            className={classNames('h-screen rounded-lg relative', { hidden: isSmall && running })}
             style={{ width: editorWidth, maxWidth: '100vw' }}
           >
             <Editor />
+            {
+              editorModal &&
+              <div
+                className={`bg-gray-500 bg-opacity-50 w-full h-full z-10 absolute left-0 top-0 
+                  flex justify-center items-center p-4 whitespace-pre-line text-xl`}
+              >
+                { editorModal }
+              </div>
+            }
           </div>
           <div
             className={classNames("bg-black text-white", { hidden: isSmall && !running})}

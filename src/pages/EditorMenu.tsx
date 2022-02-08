@@ -4,6 +4,7 @@ import { fileApi } from '@/utils/fileSystem';
 import TestScript from '@/../scripts/test.js?raw'
 import { store } from '@/store';
 import DeleteImg from '@/static/icons/delete.png';
+import { ConfirmModal } from './EditorFuncButtons';
 
 // 继续上次编辑
 // 从模板开始
@@ -13,7 +14,8 @@ const EditorMenu: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [fileList, setFileList] = useState([]);
   const [refresh, setRefresh] = useState(0);
   useEffect(() => {
-    setFileList(fileApi.getFileList());
+    const fileListResult = fileApi.getFileList().sort();
+    setFileList(fileListResult);
   }, [refresh]);
   return (
     <div className='w-full h-full bg-gray-300 flex flex-col items-center text-2xl'>
@@ -33,6 +35,8 @@ const EditorMenu: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         <div
           className='px-2 hover:bg-gray-400 rounded-md cursor-pointer'
           onClick={() => {
+            const fileName = fileApi.newFile('新建空脚本');
+            store.setFileName(fileName);
             store.setScript('');
             onClose();
           }}
@@ -63,8 +67,19 @@ const EditorMenu: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                       className='w-10 hover:bg-gray-500 p-1 rounded-md flex-shrink-0'
                       onClick={(e) => {
                         e.stopPropagation();
-                        fileApi.deleteFile(file);
-                        setRefresh(refresh + 1);
+                        store.setEditorModal(
+                          <ConfirmModal
+                            content={
+                              <div className='text-center px-4'>
+                                <div>确定删除该代码文件吗？</div>
+                              </div>
+                            }
+                            onConfirm={() => {
+                              fileApi.deleteFile(file);
+                              setRefresh(refresh + 1);
+                            }}
+                          />
+                        )
                       }}
                     >
                       <img className='w-6 relative top-1 left-1' src={DeleteImg} />

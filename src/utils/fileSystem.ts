@@ -16,6 +16,9 @@ getFileSystem({
 });
 
 export const fileApi = {
+  existFile: (name: string) => {
+    return fs.existsSync('/' + name);
+  },
   newFile: (name: string) => {
     let suffix = '';
     // 不存在同名文件
@@ -40,6 +43,9 @@ export const fileApi = {
     } catch (e) {
       return '';
     }
+  },
+  renameFile: (fileName: string, newFileName: string) => {
+    fs.renameSync('/' + fileName, '/' + newFileName);
   },
   deleteFile: (file: string) => {
     fs.unlinkSync('/' + file);
