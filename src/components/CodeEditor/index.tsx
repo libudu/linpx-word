@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { UnControlled as CodeMirror } from 'react-codemirror2';
 
 import 'codemirror/lib/codemirror.css';
@@ -25,7 +25,6 @@ const CodeEditor: React.FC<{
   readOnly?: boolean;
   cmRef?: React.MutableRefObject<any>;
 }> = ({ initText, setText, readOnly = false, cmRef }) => {
-  const [value, _] = useState(initText);
   return (
     <CodeMirror
       ref={cmRef}
@@ -49,7 +48,7 @@ const CodeEditor: React.FC<{
           hint,
         }
       }}
-      value={value}
+      value={initText}
       onCursorActivity={(e) => {
         e.showHint();
       }}

@@ -1,11 +1,9 @@
 import React from 'react';
 import { store } from '@/store';
 import { getChooseFileText, downloadText } from '@/utils';
-import TestScript from '@/../scripts/test.js?raw'
 
 import DeleteImg from '@/static/icons/delete.png';
 import DownloadImg from '@/static/icons/download.png';
-import ResetImg from '@/static/icons/reset.png';
 import FileImg from '@/static/icons/file.png';
 import RedoImg from '@/static/icons/redo.png';
 import UndoImg from '@/static/icons/undo.png';
@@ -78,24 +76,6 @@ export const FuncButtonList: FuncButtonProps[] = [
             </div>
           }
           onConfirm={() => store.setEditorScript('')}
-        />
-      );
-    },
-  },
-  {
-    name: '重置',
-    icon: ResetImg,
-    width: 20,
-    onClick: () => {
-      store.setEditorModal(
-        <ConfirmModal
-          content={
-            <div className='text-center px-4'>
-              <div>确定重置为模板代码吗</div>
-              <div>重置后可撤销</div>
-            </div>
-          }
-          onConfirm={() => store.setEditorScript(TestScript)}
         />
       );
     },

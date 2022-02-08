@@ -7,6 +7,7 @@ import { store } from '@/store';
 import { isScreenSmall } from '@/utils';
 import classNames from 'classnames';
 import { lifeEvent } from '@/scripts/event';
+import EditorMenu from './EditorMenu';
 
 // 封装弹性自适应页面逻辑
 const Home: React.FC = () => {
@@ -50,6 +51,8 @@ const Home: React.FC = () => {
     refreshSize();
     window.onresize = refreshSize;
   }, []);
+
+  const [showMenu, setShowMenu] = useState(true);
  
   return (
     <div className="w-screen h-screen bg-gray-900 flex justify-center items-center overflow-x-scroll scrollbar-hidden">
@@ -60,7 +63,11 @@ const Home: React.FC = () => {
             className={classNames('h-screen rounded-lg relative', { hidden: isSmall && running })}
             style={{ width: editorWidth, maxWidth: '100vw' }}
           >
-            <Editor />
+            {
+              showMenu
+              ? <EditorMenu onClose={() => setShowMenu(false)} />
+              : <Editor onClose={() => setShowMenu(true)} />
+            }
             {
               editorModal &&
               <div

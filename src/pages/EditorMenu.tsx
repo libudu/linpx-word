@@ -56,8 +56,8 @@ const EditorMenu: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                     className='pl-2 hover:bg-gray-400 rounded-md cursor-pointer w-60 flex justify-between'
                     onClick={async () => {
                       const content = await fileApi.readFile(file);
-                      store.setScript(content);
                       store.setFileName(file);
+                      store.setScript(content);
                       onClose();
                     }}
                   >

@@ -5,7 +5,6 @@ import CodeEditor from '@/components/CodeEditor';
 import { store } from '@/store';
 import { lifeEvent } from '@/scripts/event';
 import { fileApi } from '@/utils/fileSystem';
-import EditorMenu from './EditorMenu';
 import { FuncButton, FuncButtonList } from './EditorFuncButtons';
 
 import LeftImg from '@/static/icons/left.png';
@@ -15,25 +14,18 @@ const cacheScriptToFileSystem = throttle((file: string, script: string) => {
   fileApi.writeFile(file, script);
 }, 1000, { leading: false });
 
-const Editor: React.FC = () => {
+const Editor: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const { running, script, fileName, setRunning, setScript, setRunningMode, setFileName } = store;
 
-  const [showMenu, setShowMenu] = useState(true);
   const [tempFileName, setTempFileName] = useState(fileName);
-  useEffect(() => {
-    setTempFileName(fileName);
-  }, [fileName]);
+  // 初始脚本、编辑器ref
+  const [initScript, setInitScript] = useState(script);
   const ref = useRef<any>();
   useEffect(() => {
-    if(ref.current) {
-      store.setEditor(ref.current.editor);
-      store.setEditorScript(store.script);
-    }
-  }, [ref.current]);
-
-  if(showMenu) {
-    return <EditorMenu onClose={() => setShowMenu(false)} />;
-  }
+    setInitScript(script);
+    store.setEditor(ref.current.editor);
+    store.setEditorScript(store.script);
+  }, []);
 
   return (
     <div
@@ -41,7 +33,7 @@ const Editor: React.FC = () => {
     >
       <div
         className='absolute left-2 top-2 w-9 p-1.5 rounded-md hover:bg-gray-400'
-        onClick={() => setShowMenu(true)}
+        onClick={() => onClose()}
       >
         <img src={LeftImg} />
       </div>
@@ -52,7 +44,6 @@ const Editor: React.FC = () => {
           onChange={(e) => {
             const name = e.target.value;
             setTempFileName(name);
-            console.log(name);
           }}
           onBlur={(e) => {
             const name = e.target.value;
@@ -80,7 +71,7 @@ const Editor: React.FC = () => {
       <div className='w-full flex-grow overflow-hidden'>
         <CodeEditor
           cmRef={ref}
-          initText={script}
+          initText={initScript}
           setText={(value) => {
             setScript(value);
             cacheScriptToFileSystem(fileName, value);
