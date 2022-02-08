@@ -107,8 +107,6 @@ export const hint: HintFunction = (cmInstance) => {
     const upMove = e.pickUpMove;
     const cursor = cmInstance.getCursor();
     cmInstance.setCursor({ ch: cursor.ch - (leftMove || 0), line: cursor.line - (upMove || 0) });
-  })
+  });
   return result;
-  
-  return undefined;
 };

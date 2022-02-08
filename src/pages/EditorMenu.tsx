@@ -15,6 +15,7 @@ const EditorMenu: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [refresh, setRefresh] = useState(0);
   useEffect(() => {
     const fileListResult = fileApi.getFileList().sort();
+    console.log(fileListResult);
     setFileList(fileListResult);
   }, [refresh]);
   return (
@@ -44,7 +45,7 @@ const EditorMenu: React.FC<{ onClose: () => void }> = ({ onClose }) => {
           新建空脚本
         </div>
         {
-          fileList.length &&
+          fileList.length > 0 &&
           <>
             <div className='px-2 rounded-md'>脚本列表</div>
             <div className='ml-8'>

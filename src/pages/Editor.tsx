@@ -83,7 +83,7 @@ const Editor: React.FC = () => {
           initText={script}
           setText={(value) => {
             setScript(value);
-            cacheScriptToFileSystem(store.fileName, value);
+            cacheScriptToFileSystem(fileName, value);
           }}
         />
         {
